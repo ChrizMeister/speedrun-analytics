@@ -1,0 +1,81 @@
+
+<div class="toolbar" role="banner">
+  
+  <div class="spacermain"></div>
+  <img width="35" alt="Speedrun.com logo" src="https://www.speedrun.com/images/trophy.png" />
+  <a href="https://www.speedrun.com" target="_blank">
+    <img class="navImage" src="https://www.speedrun.com/themes/Default/logo-light.png" />
+  </a>
+  <h1 class="title">
+    ANALYTICS
+  </h1>
+</div>
+
+<body>
+  <div class="content" role="main">
+    <app-search></app-search>
+    
+    <h1 style="font-weight: 500; font-size: 30px;">Most Popular Games on Speedrun.com</h1>
+    <div class="card-container">
+      <a *ngFor="let game of mostPopularGames" class="card" href="/game/{{game.id}}">
+          <h2>{{game.name}}</h2>
+          <div class="onHover">
+            <img [src]="game.cover" class="cardImage"/>
+          </div>
+          <h3>{{game.genres}}</h3>
+          <h3>Released {{game.releaseDate.slice(0, 4)}}</h3>
+          <h3>{{game.numPlayers}} Players</h3>
+          <h3>{{game.numRuns}} Runs</h3>
+          <a [href]="game.weblink" target="_blank">
+            <div class="cardLeaderboard">
+              <h3>View on Speedrun.com</h3>
+            </div>
+          </a>
+          
+      </a>
+    </div>
+
+    <div class="card card-large">
+      <h1 class="stats">Some stats...</h1>
+      <h2>Of the last 500 submitted runs to Speedrun.com...</h2>
+      <h2><span class="highlight">{{recentRuns.length}}</span> of them were in different games</h2>
+      <h2><span class="highlight">{{uniquePlayers.length}}</span> unique runners submitted runs</h2>
+      <h2 *ngIf="recentRuns[0]">The games with the most submitted runs were...</h2> 
+      <h2 *ngIf="recentRuns[0]">
+        <a href="/game/{{recentRuns[0].id}}" class="link">
+          {{recentRuns[0].name}}
+        </a>
+        with <span class="highlight">{{recentRuns[0].numRuns}}</span> runs,
+
+        <a href="/game/{{recentRuns[1].id}}" class="link">
+          {{recentRuns[1].name}}
+        </a>
+        with <span class="highlight">{{recentRuns[1].numRuns}}</span> runs, and
+
+        <a href="/game/{{recentRuns[2].id}}" class="link">
+          {{recentRuns[2].name}}
+        </a>
+        with <span class="highlight">{{recentRuns[2].numRuns}}</span> runs
+      </h2>
+      <h2 *ngIf="playerRunFrequency[0]">The runners with the most submitted runs were...</h2> 
+      <h2 *ngIf="playerRunFrequency[0]">
+        <a href="/user/{{playerRunFrequency[0].id}}" class="linkPurple">
+          {{playerRunFrequency[0].name}}
+        </a>
+        with <span class="highlight">{{playerRunFrequency[0].numRuns}}</span> runs,
+
+        <a href="/user/{{playerRunFrequency[1].id}}" class="linkPurple">
+          {{playerRunFrequency[1].name}}
+        </a>
+        with <span class="highlight">{{playerRunFrequency[1].numRuns}}</span> runs, and
+
+        <a href="/user/{{playerRunFrequency[2].id}}" class="linkPurple">
+          {{playerRunFrequency[2].name}}
+        </a>
+        with <span class="highlight">{{playerRunFrequency[2].numRuns}}</span> runs
+      </h2>
+
+    </div>
+
+  </div>
+</body>

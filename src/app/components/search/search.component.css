@@ -1,0 +1,84 @@
+  * {
+	box-sizing: border-box;
+  }
+
+  .suggestions {
+	margin-top: 10px;
+	position: relative;
+	width: 450px;
+  }
+
+  .searchBar {
+	border: 5px solid #4b4b4b;
+	border-radius: 3px;
+	background-color: #f1f1f1;
+	font-size: 16px;
+	width: 100%;
+	padding: 10px;
+	z-index: 99;
+	transition: all 0.2s ease-in-out;
+  }
+
+  .searchBar:hover{
+	  border: 5px solid rgb(255, 230, 0);
+  }
+
+  :focus.searchBar { 
+	  outline: none; 
+  }
+  
+  .suggestionList {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	border: 1px solid #4b4b4b;
+	border-radius: 3px;
+	padding: 10px;
+	font-size: 16px;
+	color: #eeeeee;
+	background-color: #333333;
+	max-height: 600px;
+	overflow-y:auto;
+	z-index:99;
+  }
+
+  div.suggestionItem {
+	padding-top: 15px;
+  }
+
+  div.suggestionItem:hover {
+	padding-top: 15px;
+	color: #c3c3c3;
+  }
+
+  div.header{
+	color: #c3c3c3;
+	font-size: 20px;
+	padding-bottom: 5px;
+  }
+
+  a.suggestionItem, a.suggestionItem:visited {
+    color: #eeeeee;
+	text-decoration: none;
+	font-size: 20px;
+  }
+
+  @media screen and (max-width: 470px) {
+
+	.suggestions {
+		margin-top: 10px;
+		position: relative;
+		width: 100%;
+	  }
+
+	.searchBar {
+		border: 5px solid #4b4b4b;
+		border-radius: 3px;
+		background-color: #f1f1f1;
+		font-size: 16px;
+		width: 95%;
+		padding: 10px;
+	  }
+	
+  }

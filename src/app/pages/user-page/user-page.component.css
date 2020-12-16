@@ -1,0 +1,319 @@
+ngx-charts-bar-vertical {
+  fill: #e9e9e9 !important;
+  font-size: 26px;
+  font-weight: 450;
+}
+
+h1.name {
+  font-weight: 900;
+}
+
+h1.location {
+  font-weight: 450;
+  color:#c7c7c7;
+}
+
+
+.card {
+  border-radius: 4px;
+  border: 1px solid #1d1d1d;
+  background-color: rgb(41, 41, 41);
+  height: 80px;
+  width: 220px;
+  margin: 0 8px 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease-in-out;
+  line-height: 24px;
+}
+
+.profilePicture {
+  width:150px;
+  height:155px;
+  border: 3px solid; 
+  border-color: #757575; 
+  border-radius: 10px;
+}
+
+.card.card-large{
+	margin-top: 16px;
+  border-radius: 4px;
+  border: 1px solid #1d1d1d;
+  background-color: rgba(20, 20, 20, 0.95);
+  height: 99%;
+  width: 95%;
+  padding: 2px;
+  flex-direction: column;
+}
+
+.card.card-back {
+  height: 10px;
+  width: 120px;
+  cursor: pointer;
+}
+
+
+.card-body-container.worldRecords {
+  height: 50%;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+h1 > a {
+  transition: all 0.2s ease-in-out;
+  color:rgb(0, 255, 255); 
+  font-size: 25px; 
+  font-weight: 500;
+}
+
+h1 > a:hover{
+  color:orange; 
+}
+
+.cardUserpage {
+  position: relative;
+  top: 5px;
+  border-radius: 4px;
+  border: 2px solid #1d1d1d;
+  background-color: #3a3a3a;
+  height: 20px;
+  width: 200px;
+  margin-top: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.cardUserpage:hover, .cardSmall:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 17px rgba(0, 0, 0, 0.35);
+  border: 2px solid  rgb(255, 230, 0);
+}
+
+.cardRecord:hover{
+  border: 2px solid  rgb(255, 187, 0);
+}
+
+.cardSmall {
+  border-radius: 4px;
+  border: 2px solid #444444;
+  background-color: #1d1d1d;
+  height: 70px;
+  width: 270px;
+  margin: 0 8px 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease-in-out;
+  line-height: 10%;
+}
+
+div.cardSmall > h2.top {
+  position: relative;
+  top: 15px;
+}
+
+div.cardSmall > h2 {
+  line-height: 40%;
+  position: relative;
+  top: 8px;
+}
+
+.cardRecord{
+  position: relative;
+  top: -5px;
+  border-radius: 4px;
+  border: 2px solid #1d1d1d;
+  background-color: #3a3a3a;
+  height: 20px;
+  width: 200px;
+  margin-top: 10px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.cardRecord > h3 {
+  margin-top: 20px;
+}
+
+.card:not(.card-large):hover {
+  transform: translateY(-1px);
+  /*height:160px; */
+  box-shadow: 0 4px 17px rgba(0, 0, 0, 0.35);
+}
+
+.loader {
+  border: 16px solid #f3f3f3;
+  border-top: 16px solid #585858;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  animation: spin 1s linear infinite;
+}
+
+.smallGreenText {
+  color:rgb(0, 255, 179); 
+  font-size: 16px;
+}
+
+.smallBlueText {
+  color:#31e7f7;
+  font-size: 16px;
+}
+
+@media screen and (max-width: 1350px) {
+
+  .card-header-container{
+    width: 90%;
+  }
+
+  .card-body-container{
+    width: 90%;
+  }
+
+  .card.card-large {
+    width: 95%;
+  }
+
+}
+
+@media screen and (max-width: 1167px) {
+  .card1{
+    height: 40%;
+    width: 90%;
+  }
+
+  .card2{
+    height: 40%;
+    width: 90%;
+  }
+
+  .card2 h1 {
+    font-size: 20px;
+  }
+
+  .card-header-container{
+    height: 90%;
+  }
+
+}
+
+@media screen and (max-width: 1151px) {
+    
+
+  .profilePicture {
+    width:100px;
+    height:102px;
+  }
+
+  .cardUserpage {
+    width: 170px;
+    height: 20px;
+    padding: 4px;
+  }
+
+  .cardUserpage > h3{
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+
+
+  .card-body-container.worldRecords{
+    height: 50%;
+  }
+
+  .smallGreenText {
+    color:rgb(0, 255, 179); 
+    font-size: 13px;
+  }
+
+  .smallBlueText {
+    color:#31e7f7;
+    font-size: 13px;
+  }
+  
+}
+
+@media screen and (max-width: 800px) {
+
+
+
+  .card-body-container.worldRecords{
+    height: 50%;
+  }
+
+  .card-body-container{
+    height: 700px;
+  }
+  
+}
+
+@media screen and (max-width: 600px) {
+
+  .cardSmall{
+    width: 150px;
+  }
+
+  .cardSmall > h2{
+    font-size: 14px;
+  }
+
+  .cardRecord {
+    width: 130px;
+  }
+
+  .cardRecord > h3 {
+    font-size: 12px;;
+  }
+
+  .smallBlueText {
+    color:#31e7f7;
+    font-size: 11px;
+  }
+
+  .smallGreenText {
+    color:rgb(0, 255, 179); 
+    font-size: 11px;
+  } 
+}
+
+/* Making title Responsive*/
+@media screen and (max-width: 700px) {
+  h1.title{
+    position: absolute;
+    left: 49vw;
+    top: 35px;
+    color: #f3f3f3; 
+    font-size: 4.5vw; 
+    font-weight: 650;
+  }
+
+  .navImage {
+    width: 48vw; 
+    padding: 10px
+  }
+
+  img.logo {
+    display:none;
+  }
+
+}

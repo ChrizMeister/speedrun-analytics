@@ -1,0 +1,197 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<body [style.background]= "'url(' + game.backgroundLink + ')'" [style.background-attachment]="'fixed'" *ngIf="game">
+
+    <div class="toolbar" role="banner">
+        <a class="card card-back" href="/">     
+            <span class="material-icons">arrow_back </span> <span>Home</span>
+        </a>
+        <div class="spacer"></div>
+        <img class="logo" width="35" alt="Speedrun.com logo" src="https://www.speedrun.com/images/trophy.png" />
+        <a href="https://www.speedrun.com" target="_blank"><img [src]="game.logoLink" width="200px" class="navImage"/></a>
+        <h1 class="title">
+            ANALYTICS
+        </h1>
+    </div>
+
+    <div class="content" role="main" *ngIf="game">
+            <div class="card card-large">
+                <div class="card-header-container">
+                    <div class="card1">
+                        <div *ngIf="!(game.name.length > 40)">
+                            <h1 style="text-align: center">{{game.name}}</h1>
+                        </div>
+                        <div *ngIf="game.name.length > 40">
+                            <h4 style="text-align: center">{{game.name}}</h4>
+                        </div>
+                        
+                        <img [src]="game.coverLink" height="250px" width="220px"/>
+                        <a [href]="game.weblink" target="_blank">
+                            <div class="cardLeaderboard">
+                                <h2>View on Speedrun.com</h2>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="card2">
+                        <h3> Developers: 
+                            <span *ngIf="game.developers.length > 0">{{game.developersString}}</span>
+                            <span *ngIf="game.developers.length == 0">N/A</span>
+                        </h3>
+                        <h3> Release Date: <span>{{game.releaseDate}}</span></h3>
+                        <h3> Platforms: <span>{{game.platformsString}}</span></h3>
+                        <h3> Genres:
+                        <span *ngIf="game.genresString.length > 0"> {{game.genresString}}</span>
+                        <span *ngIf="game.genresString.length == 0"> N/A</span></h3>
+                        <h3> Categories:
+                        <span> {{game.categoriesString}}</span></h3>
+                        
+                    </div>
+                </div>
+                <div class="card-body-container" #containerRef>
+                    <h1>       
+                        Distribution of Runs by Category
+                    </h1>
+                    <div *ngIf="runsData">
+                        <ngx-charts-bar-vertical
+                            [view]="[containerRef.offsetWidth - 50, 400]"
+                            [scheme]="colorScheme"
+                            [results]="runsData"
+                            [gradient]="gradient"
+                            [xAxis]="showXAxis"
+                            [yAxis]="showYAxis"
+                            [legend]="true"
+                            [showXAxisLabel]="showXAxisLabel"
+                            [showYAxisLabel]="showYAxisLabel"
+                            [xAxisLabel]="xAxisLabel"
+                            [yAxisLabel]="yAxisLabel1">
+                        </ngx-charts-bar-vertical>
+                    </div>
+                    <div *ngIf="!runsData">
+                        <h1>Loading chart...</h1>
+                        <div class="loader"></div>
+                    </div>
+                </div>
+
+                <div class="card-body-container" #containerRef>
+                    <h1>       
+                        World Record & Average Times by Category
+                    </h1>
+                    <div *ngIf="timesData">
+                        <ngx-charts-bar-vertical-stacked
+                            [view]="[containerRef.offsetWidth - 50, 400]"
+                            [scheme]="colorScheme"
+                            [results]="timesData"
+                            [gradient]="gradient"
+                            [xAxis]="showXAxis"
+                            [yAxis]="showYAxis"
+                            [legend]="true"
+                            [showXAxisLabel]="showXAxisLabel"
+                            [showYAxisLabel]="showYAxisLabel"
+                            [xAxisLabel]="xAxisLabel"
+                            [yAxisLabel]="yAxisLabel2">
+                        </ngx-charts-bar-vertical-stacked>
+                    </div>
+                    <div *ngIf="!timesData">
+                        <h1>Loading chart...</h1>
+                        <div class="loader"></div>
+                    </div>
+                </div>
+                <div class="card-body-container" #containerRef>
+                    <h1 *ngIf="game.numCategories > 5; else elseBlock">       
+                        Number of Runs in Top 5 Categories Over Time
+                    </h1>
+                    <ng-template #elseBlock>
+                        <h1>       
+                            Number of Runs in All Categories Over Time
+                        </h1>
+                    </ng-template>
+                    <div *ngIf="runsOverTimeData">
+                        <ngx-charts-line-chart
+                            [view]="[containerRef.offsetWidth - 50, 400]"
+                            [scheme]="colorScheme"
+                            [legend]="true"
+                            [showXAxisLabel]="true"
+                            [showYAxisLabel]="true"
+                            [xAxis]="true"
+                            [yAxis]="true"
+                            [xAxisLabel]="xAxisLabel1"
+                            [yAxisLabel]="yAxisLabel3"
+                            [timeline]="timeline"
+                            [results]="runsOverTimeData">
+                        </ngx-charts-line-chart>
+                    </div>
+                    <div *ngIf="!runsOverTimeData">
+                        <h1>Loading chart...</h1>
+                        <div class="loader"></div>
+                    </div>
+                </div>
+
+                <div class="card-body-container worldRecordHolders">
+                    <h1>       
+                        World Record Holders
+                    </h1>
+                    <div class="card-container">
+                        <div *ngFor="let category of game.categories">
+                            <a [href] = "category.worldRecordHolderLink">
+                                <div class="cardSmall">
+                                    <h2 class="top" *ngIf="category.name.length > 15; else elseBlock1">Category: 
+                                        <span class="smallBlueText">{{category.nameShort}}</span></h2>
+                                    <ng-template #elseBlock1>
+                                        <h2 class="top">Category: <span style="color:#31e7f7;">{{category.name}}</span></h2>
+                                    </ng-template>
+                                    <h2 *ngIf="category.worldRecordHolder.name > 15; else elseBlock2">Runner:
+                                    <span class="smallPurpleText">{{category.worldRecordHolderNameShort}}</span></h2>
+                                    <ng-template #elseBlock2>
+                                        <h2>Runner: <span style="color:#5c4aff">{{category.worldRecordHolder.name}}</span></h2>
+                                    </ng-template>
+                                    <h2>Time: <span style="color:rgb(0, 255, 179)">{{category.bestTimeString}}</span></h2>
+                                </div>
+                            </a>
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="card-body-container end">       
+                    <h1 class="stats" style="font-size: 30px; color:#e0e0e0;">Some stats...</h1>    
+                    <div>
+                        <h2 class="basic"> Number of categories:
+                         <span class="green"> {{game.numCategories}}</span></h2>
+                    </div>         
+                    <div>
+                        <h2 class="basic" > Total runs across all categories:
+                         <span class="green"> {{game.totalRuns}}</span></h2>
+                    </div>
+                    <div>
+                        <h2 class="basic" > Number of unique runners across all categories:
+                         <span class="green"> {{game.numRunners}}</span></h2>
+                    </div>
+                    <div>
+                        <h2 class="basic" *ngIf="game.categories[0]">
+                            Most popular category: <span class="blue">{{game.categories[0].name}} </span>
+                            <span class="basic"> <span> with </span><span class="green">{{game.categories[0].numRuns}} </span> <span> runs (</span> 
+                            <span class="green">{{game.mostPopularPercent}}</span> <span> of all runs)</span></span>
+                        </h2>
+                    </div>
+                    <div>
+                        <h2 class="basic" *ngIf="game.categories[0]">
+                            Fastest time in <span class="blue">{{game.categories[0].name}}</span> category: 
+                            <span class="green">{{game.categories[0].bestTimeString}} </span> 
+                            by <span class="purple">{{game.categories[0].worldRecordHolder['name']}}</span>
+                        </h2>
+                    </div>
+                    <div *ngIf="game.fastestRunner.length > 0">
+                        <h2 class="basic">
+                            Fastest time in any category: <span class="green">{{game.fastestTimeString()}} </span> in
+                            <span class="blue">{{game.fastestCategory}}</span> by <span class="purple">{{game.fastestRunner}} </span>
+                        </h2>
+                    </div>       
+                </div>
+                
+            </div>
+        
+    </div>
+</body>
+
+

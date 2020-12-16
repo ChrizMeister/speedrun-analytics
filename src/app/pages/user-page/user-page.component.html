@@ -1,0 +1,133 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<body>
+    <div class="toolbar" role="banner">
+        <a class="card card-back" href="/">
+            <span class="material-icons">home </span> <span>Home</span>
+        </a>
+        <div class="spacer"></div>
+        <img class="logo" width="35" alt="Speedrun.com logo" src="https://www.speedrun.com/images/trophy.png" />
+        <a href="https://www.speedrun.com" target="_blank">
+            <img class="navImage" src="https://www.speedrun.com/themes/Default/logo-light.png"/>
+        </a>
+        <h1 class="title">
+            ANALYTICS
+        </h1>
+    </div>
+
+    <div class="content" role="main">
+        <div class="card card-large">
+            <div class="card-header-container">
+                <div class="card1">
+                    <h1 class="name">{{user.name}}</h1>
+                    <img [src]="pictureLink" class="profilePicture"/>
+                    <a [href]="user.weblink" target="_blank">
+                        <div class="cardUserpage" >
+                            <h3 class="padding">View on Speedrun.com</h3>
+                        </div>
+                    </a>
+                </div>
+                <div class="card2">
+                    <h1>Location: {{user.location}}</h1>
+                    <h1>User since: {{user.userSince}}</h1>
+                    <h1 *ngIf="allRuns[0]">Favorite Game to Run: 
+                        <a href="/game/{{allRuns[0]['gameId']}}">
+                        {{allRuns[0]['name']}}</a>
+                    </h1>
+                    <h1>Total Runs: {{totalNumRuns}}</h1>
+                    <h1>World Records: {{user.worldRecords}}</h1>
+                    <h1 *ngIf="firstRun">First ever run: <a href="/game/{{firstRun.game.id}}">{{firstRun.game.data.names.international}}</a>, 
+                        {{firstRun.category.data.name}} on {{firstRun.date}}</h1>
+                    <h1 *ngIf="latestRun">Latest run: <a href="/game/{{latestRun.game.id}}">{{latestRun.game.data.names.international}}</a>, 
+                        {{latestRun.category.data.name}} on {{latestRun.date}}</h1>
+                </div>
+                
+            </div>
+            <div class="card-body-container" #containerRef>
+                <h1 style="text-align: center">       
+                    Distribution of Runs by {{user.name}} by Game
+                </h1>
+                <div *ngIf="chartData">
+                    <ngx-charts-bar-vertical 
+                        [view]="[containerRef.offsetWidth - 50, 400]"
+                        [scheme]="colorScheme"
+                        [results]="chartData"
+                        [gradient]="gradient"
+                        [xAxis]="showXAxis"
+                        [yAxis]="showYAxis"
+                        [legend]="showLegend"
+                        [showXAxisLabel]="showXAxisLabel"
+                        [showYAxisLabel]="showYAxisLabel"
+                        [xAxisLabel]="xAxisLabel"
+                        [yAxisLabel]="yAxisLabel">
+                    </ngx-charts-bar-vertical>
+                </div>
+                <div *ngIf="!chartData">
+                    <h1>Loading chart...</h1>
+                    <div class="loader"></div>
+                </div>
+                
+            </div>
+            
+            <div class="card-body-container" #containerRef>
+                <h1 style="text-align: center">       
+                    Recent Runs by {{user.name}} by Game
+                </h1>
+                <div *ngIf="chartData1">
+                    <ngx-charts-bar-vertical
+                    [view]="[containerRef.offsetWidth - 50, 400]"
+                    [scheme]="colorScheme"
+                    [results]="chartData1"
+                    [gradient]="gradient"
+                    [xAxis]="showXAxis"
+                    [yAxis]="showYAxis"
+                    [legend]="showLegend"
+                    [showXAxisLabel]="showXAxisLabel"
+                    [showYAxisLabel]="showYAxisLabel"
+                    [xAxisLabel]="xAxisLabel"
+                    [yAxisLabel]="yAxisLabel">
+                </ngx-charts-bar-vertical>
+                </div>
+               
+                <div *ngIf="!chartData1">
+                    <h1>Loading chart...</h1>
+                    <div class="loader"></div>
+                </div>
+            </div>
+            <div class="card-body-container worldRecords">
+                <h1>       
+                    World Records held by {{user.name}}
+                </h1>
+                <div *ngIf="user.worldRecords == 0">
+                    <h1>None</h1>
+                </div>
+                <div class="card-container" *ngIf="user.worldRecords > 0">
+                    <div *ngFor="let record of worldRecords">
+                        <a [href] = "record.link">
+                            <div class="cardSmall">
+                                <h2 class="top" *ngIf="record.game.length > 16; else elseBlock1">Game: 
+                                    <span class="smallGreenText">{{record.shortGameName}}</span></h2>
+                                <ng-template #elseBlock1><h2>Game: <span style="color:rgb(0, 255, 179);">{{record.game}}</span></h2></ng-template>
+                                
+                                <h2 *ngIf="record.category.length > 11; else elseBlock2">Category: 
+                                    <span class="smallBlueText">{{record.shortCatName}}</span>
+                                </h2>
+                                <ng-template #elseBlock2><h2>Category: <span style="color:#31e7f7;">{{record.category}}</span></h2></ng-template>
+                                
+                                <a [href]="record.weblink" target="_blank">
+                                    <div class="cardRecord">
+                                        <h3>View on Speedrun.com</h3>
+                                    </div>
+                                </a>
+                            </div>
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
