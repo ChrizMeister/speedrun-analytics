@@ -27,7 +27,7 @@ export class CategoryData {
             this.averageTime = averageTime;
 
             this.bestTimeString = this.convertTime(new Date(bestTime * 1000 * 60).toISOString().substr(11, 8));
-            this.worstTimeString =  new Date(worstTime * 1000 * 60).toISOString().substr(11, 8);
+            //this.worstTimeString =  new Date(worstTime * 1000 * 60).toISOString().substr(11, 8);
             this.averageTimeString = this.convertTime(new Date(averageTime * 1000 * 60).toISOString().substr(11, 8));
             this.runs = runs;
             this.worldRecordHolder = worldRecordHolder;
@@ -40,7 +40,7 @@ export class CategoryData {
             }
             
             if(name.length > 15){
-                this.nameShort = this.categoryName.slice(0, 15) + "...";
+                this.nameShort = this.name.slice(0, 15) + "...";
             }
             if (worldRecordHolder['id'] && worldRecordHolder['id'] != "N/A"){
                 this.worldRecordHolderLink = "/user/" + worldRecordHolder['id'];
@@ -51,6 +51,8 @@ export class CategoryData {
         
     }
     
+
+    // Return the number of runs on or before the specified date
     public numRunsInPast(pastDate: Date): number{
         var count = 0;
         this.runs.forEach((run) => {
@@ -63,6 +65,7 @@ export class CategoryData {
         return count;
     }
 
+    // Convert a time string of format "HH-MM-SS" to "HHh MMm SSs" 
     public convertTime(time: string){
         var str = "";
         var hours = time.substr(0, 2);
@@ -76,25 +79,4 @@ export class CategoryData {
         return str
     }
 
-
-    //Getters
-	get categoryID(): string {
-        return this.id;
-	}
-
-	get categoryName(): string {
-		return this.name;
-    }
-    
-    get numberOfRuns(): number{
-        return this.numRuns;
-    }
-
-    get game(): string{
-        return this.gameName;
-    }
-
-    get gameid(): string{
-        return this.gameID;
-    }
 }

@@ -13,10 +13,11 @@ export class GameData {
 	genres;
 	genresString: string = "";
 	numCategories: number;
-	categories;
+	categories: CategoryData[];
 	categoriesString: string;
 	categories1;
 	categories2;
+	levelCategories;
 	categoriesOverTime;
 	topCategories;
 	recordsLink;
@@ -54,60 +55,65 @@ export class GameData {
 		this.categoriesString = "";
 	}
 
+	// Return string of the fastest time in any category
 	public fastestTimeString(){
 		var bestString = new CategoryData().convertTime(new Date(this.fastestTime * 1000).toISOString().substr(11, 8));
 		return bestString;
 	}
 
+	// Add a new per-game category to the game
 	public addCategory(id:string = "", name:string, numRuns = 0, bestTime = 999999, worstTime = 999999, averageTime = 999999, 
 					   runs = [], worldRecordHolder = {}, type:string = "per-game"){
-		if (type == "per-game"){
-			var objectRuns = {name: name, value: numRuns};
-			var bestString = new CategoryData().convertTime(new Date(bestTime * 1000).toISOString().substr(11, 8));
-			var averageString = new CategoryData().convertTime(new Date(averageTime * 1000).toISOString().substr(11, 8));
-			//var worstString = new Date(worstTime * 1000).toISOString().substr(11, 8)
-			bestTime = bestTime / 60;
-			averageTime = averageTime / 60;
-			worstTime = worstTime / 60;
-			var objectTimes = {"name": name, "series": [{name: "World Record: " + bestString, value: bestTime}, 
-														{name: "Average Time: " + averageString, value: averageTime}]};
-														//{name: "Worst Time: " + worstString, value: worstTime}]}
-			this.categories.push(new CategoryData(id, name, numRuns, bestTime, worstTime, averageTime, runs, worldRecordHolder))
 
-			this.categories1.push(objectRuns);
-			this.categories2.push(objectTimes)
-			//console.log(objectTimes)
-			this.totalRuns += numRuns;
-			if (name.length > 0){
-				this.numCategories += 1;
-				if (this.categoriesString.length == 0){
-					this.categoriesString = "'" + name + "'";
-				} else {
-					this.categoriesString += ", '" + name + "'";
-				}
-			}
-		} else {
-			if (!this.categoriesString.includes("Level Categories")){
-				if (this.categoriesString.length == 0){
-					this.categoriesString = "'" + "Level Categories" + "'";
-				} else {
-					this.categoriesString += ", '" + "Level Categories" + "'";
-				}
-			}
-			var objectRuns = {name: "Level Categories", value: numRuns};
-			var index = this.categoryNameToIndex("Level Categories");
-			if (index == -1){
-				this.categories1.push(objectRuns);
-			} else {
-				this.categories1[index].value += numRuns;
-				//console.log(this.categories1[index])
-			}
-			this.totalRuns += numRuns;
+		var objectRuns = {name: name, value: numRuns};
+		var bestString = new CategoryData().convertTime(new Date(bestTime * 1000).toISOString().substr(11, 8));
+		var averageString = new CategoryData().convertTime(new Date(averageTime * 1000).toISOString().substr(11, 8));
+		//var worstString = new Date(worstTime * 1000).toISOString().substr(11, 8)
+		bestTime = bestTime / 60;
+		averageTime = averageTime / 60;
+		worstTime = worstTime / 60;
+		var objectTimes = {"name": name, "series": [{name: "World Record: " + bestString, value: bestTime}, 
+													{name: "Average Time: " + averageString, value: averageTime}]};
+													//{name: "Worst Time: " + worstString, value: worstTime}]}
+		this.categories.push(new CategoryData(id, name, numRuns, bestTime, worstTime, averageTime, runs, worldRecordHolder))
+
+		this.categories1.push(objectRuns);
+		this.categories2.push(objectTimes)
+		//console.log(objectTimes)
+		this.totalRuns += numRuns;
+		if (name.length > 0){
 			this.numCategories += 1;
+			if (this.categoriesString.length == 0){
+				this.categoriesString = "'" + name + "'";
+			} else {
+				this.categoriesString += ", '" + name + "'";
+			}
 		}
-		
 	}
 
+	// Add a new level category to the game
+	public addLevelCategory(levelName, levelId, numRuns){
+		/*
+		if (!this.categoriesString.includes("Level Categories")){
+			if (this.categoriesString.length == 0){
+				this.categoriesString = "'" + "Level Categories" + "'";
+			} else {
+				this.categoriesString += ", '" + "Level Categories" + "'";
+			}
+		}*/
+		var objectRuns = {name: "Level Categories", value: numRuns};
+		var index = this.categoryNameToIndex("Level Categories");
+		if (index == -1){
+			this.levelCategories.push(objectRuns);
+		} else {
+			this.levelCategories[index].value += numRuns;
+			//console.log(this.categories1[index])
+		}
+		this.totalRuns += numRuns;
+		this.numCategories += 1;
+	}
+
+	// Return the index of a category name
 	public categoryNameToIndex(name): number {
 		for(var i = 0; i < this.categories1.length; i++){
 			if(name == this.categories1[i]['name']){
@@ -117,6 +123,7 @@ export class GameData {
 		return -1;
 	}
 
+	// Sort all categories in decreasing order by number of runs in that category
 	public sortCategories(){
 		var length = this.categories.length;
 		if (this.categories.length > 0){
@@ -149,7 +156,8 @@ export class GameData {
 		}
 	}
 
-	public getPastRuns(){
+	// Iterate through runs and analyze how many runs occurred before certain dates
+	public analyzePastRuns(){
 		var dates: Date[] = [];
 		var now = new Date();
 		var currentYear = now.getFullYear();

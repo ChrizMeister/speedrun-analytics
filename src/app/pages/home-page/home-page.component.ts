@@ -49,7 +49,7 @@ export class HomePageComponent implements OnInit {
 	playerRunFrequency;
 	runsOverTime;
 	mostPopularGames;
-	
+
 	constructor(private dataService: DataService) { 
 		this.mostPopularGames = [];
 		this.recentRuns = [];
@@ -68,7 +68,7 @@ export class HomePageComponent implements OnInit {
 		if (!storage.getItem("gamesList")){
 			console.log("Storage Empty")
 			storage.setItem("gamesList", "[]");
-			this.getMostPopularGamesInfo(dataService, 10);
+			this.getMostPopularGamesInfo(dataService, storage, 10);
 		} else {
 			var gamesList: any[] = JSON.parse(storage.getItem("gamesList"));
 			console.log("gamesList:", gamesList);
@@ -82,33 +82,24 @@ export class HomePageComponent implements OnInit {
 		}
 	}
 
-	async getMostPopularGamesInfo(dataService: DataService, x: number = 10){
-		var storage = window.sessionStorage;
+	// Iterate through list of most popular games and get information about the 'x' most popular games
+	// Store this information into sessionStorage so it doesn't need to be retrieved again until the next session.
+	async getMostPopularGamesInfo(dataService: DataService, storage, x: number = 10){
 		for (const name of this.topGames.slice(0, x)){
 			await this.getGameInfo(storage, name, dataService);
-			//await this.gameRunsOverTime(this.dataService.gameNameToID(game));
 		}
 		this.chartData2 = this.runsOverTime;
 	}
 
 	// Get info about the top five games on Speedrun.com
 	async getGameInfo(storage, name:string, dataService: DataService){
-		//var gameNames = [];
 		const id = dataService.gameNameToID(name);
-		//console.log("NAME:", name)
-		//console.log("ID:", id)
-
 		await dataService.getGame(id).then(async (object) => {
-			//console.log(object['data']);
-			var data = object['data']
-			var cover = data['assets']['cover-medium']['uri'];
+			var data = object['data'];
 			var genreArray = [];
 			data['genres']['data'].forEach((genre)=>{
 				genreArray.push(genre['name']);
 			});
-			var releaseDate = data['release-date'];
-			var genres = genreArray.join(", ");
-			var weblink = data['weblink'];
 			var numRuns = 0;
 			var allPlayers = [];
 			var dates = [];
@@ -121,9 +112,7 @@ export class HomePageComponent implements OnInit {
 			dates.push(new Date());
 			var runs = [];
 			await this.dataService.getPerGameRecords(id).then((records) =>{
-				//console.log("full records:", records['data'])
 				records['data'].forEach((record) =>{
-					//var category = record['category']['data'];
 					numRuns += record['runs'].length
 					record['players']['data'].forEach((player) => {
 						if (!allPlayers.includes(player['id']) && player['id']){
@@ -135,18 +124,15 @@ export class HomePageComponent implements OnInit {
 			});
 			
 			this.runsOverTime.push({name: name, series: runs});
-			var gameInfo = {name: data['names']['international'], id: data['id'], cover: cover, 
-							genres: genres, releaseDate: releaseDate, weblink: weblink, 
+			var gameInfo = {name: data['names']['international'], id: data['id'], cover: data['assets']['cover-medium']['uri'], 
+							genres: genreArray.join(", "), releaseDate: data['release-date'], weblink: data['weblink'], 
 							numPlayers: allPlayers.length, numRuns: numRuns, chartData: {name: name, series: runs}};
 
 			var gamesList = JSON.parse(storage.getItem("gamesList"));
 			gamesList.push(gameInfo);
-			//console.log("gameInfo:", gameInfo)
 			storage.setItem("gamesList", JSON.stringify(gamesList));
 			this.mostPopularGames.push(gameInfo);
 		});
-		
-		//this.chartData2 = this.runsOverTime;
 	}
 
 	// For each date in dates, store how many runs from the record occured on or before that date
@@ -157,7 +143,6 @@ export class HomePageComponent implements OnInit {
 			var month = date.toLocaleDateString('en-US', {month: 'short'})
 			var dateString = month + " " + year;
 			var index = this.dateIndex(runs, dateString);
-
 			if (index == -1){
 				runs.push({value: numRuns, name: dateString});
 			} else {
@@ -191,19 +176,13 @@ export class HomePageComponent implements OnInit {
         return count;
 	}
 	
-	// Gather data about the most recent 500 speedruns submitted to the site
+	// Gather data about the 500 most recent speedruns submitted to the site
 	getNewestRuns(dataService: DataService){
-		var recentRuns = [];
 		var recentRunNames = [];
 		var count = 0;
 		function getRuns(object){
-			//console.log("object:", object)
-
 			if (count < 25){
-				//console.log("Num runs:", this.totalNumRuns);
 				object['data'].forEach((run) => {
-					//recentRuns.push(run);
-					//console.log("run:", run)
 					var name = run['game']['data']['names']['international'];
 					var id = run['game']['data']['id'];
 					var playerId = run['players']['data'][0]['id'];
@@ -221,8 +200,6 @@ export class HomePageComponent implements OnInit {
 						var index = recentRunNames.indexOf(name);
 						this.recentRuns[index]['value'] = (this.recentRuns[index]['value'] + 1)
 					}
-					//console.log("name:", name)
-					//console.log("id:", id)
 				});
 
 				if (object['pagination']['links'].length > 1){ // Middle
@@ -237,20 +214,13 @@ export class HomePageComponent implements OnInit {
 							count += 1;
 							//console.log(count)
 							dataService.makeRequest(nextURL).then(getRuns.bind(this));
-						} else { // End
 						}
-
-					} else { // End
-						//this.chartData = this.allRuns.sort((a, b) => (a.value < b.value) ? 1 : -1);
 					}
 				}
 			}	else {
 				this.recentRuns.sort((a, b) => (a.value < b.value) ? 1 : -1);
 				this.playerRunFrequency.sort((a, b) => (a.value < b.value) ? 1 : -1);
-
-				//console.log("this.recentRuns:", this.recentRuns)
 				this.chartData1 = this.recentRuns.slice(0, 10);
-				//console.log("chartData1:", this.chartData1);
 			}	
 		}
 		dataService.getNewestRuns().then(getRuns.bind(this));

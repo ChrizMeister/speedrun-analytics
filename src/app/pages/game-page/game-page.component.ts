@@ -80,9 +80,9 @@ export class GamePageComponent implements OnInit {
     this.game = gameData;
     this.runsData = this.game.categories1;
     this.timesData = this.game.categories2;
-    this.game.getPastRuns();
+    this.game.analyzePastRuns();
     this.runsOverTimeData = this.game.categoriesOverTime;
-    console.log(this.runsOverTimeData)
+    console.log("this.runsOverTimeData:", this.runsOverTimeData);
     //console.log(this.game.categories)
     //console.log("full data:", this.runsOverTimeData);
   }
@@ -160,18 +160,21 @@ export class GamePageComponent implements OnInit {
       //console.log("runnerIds length:", runnerIds.length)
     });
 
-    if (false)
+    if (true)
     await this.dataService.getLevelRecords(this.gameID).then((object) =>{
       console.log("full level records:", object['data'])
       var data = object['data'];
       var runnerIds = [];
       data.forEach((record) =>{
-        console.log("record:", record);
+        //console.log("record:", record);
         if (record['category']['data']['type'] == 'per-level'){
           //console.log("record:", record);
           var numRuns = record['runs'].length;
-          gameData.addCategory("N/A", "Level Categories", numRuns, );
-          gameData.sortCategories();
+          if (numRuns > 0){
+            //console.log("level record:", record);
+          }
+          //gameData.addCategory("N/A", "Level Categories", numRuns, );
+          //gameData.sortCategories();
         }  
       });
     });
