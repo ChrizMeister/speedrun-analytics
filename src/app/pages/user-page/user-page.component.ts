@@ -36,7 +36,7 @@ export class UserPageComponent implements OnInit {
   yAxisLabel = '# of Runs';
 
   colorScheme = {
-    domain: ['#31e7f7', '#2871d1', '#28d19b', '#5c4aff']
+    domain: ['#31e7f7', '#2871d1', '#28d19b', '#5c4aff', '#ffbb00']
   };
 
   worldRecords;
@@ -157,7 +157,6 @@ export class UserPageComponent implements OnInit {
     const dataService = this.dataService;
     function getRuns(object){
       this.totalNumRuns += object['data'].length;
-      //console.log("Num runs:", this.totalNumRuns);
       object['data'].forEach((run) => {
         this.allRunsData.push(run);
         var name = run['game']['data']['names']['international'];
@@ -176,8 +175,6 @@ export class UserPageComponent implements OnInit {
           } else {
             this.recentRuns[this.nameToIndex(this.recentRuns, name)]['value'] += 1;
           }
-        } else {
-          this.chartData1 = this.recentRuns.sort((a, b) => (a.value < b.value) ? 1 : -1);
         }
       });
       if (object['pagination']['links'].length > 1){ // Middle
@@ -189,17 +186,16 @@ export class UserPageComponent implements OnInit {
             var nextURL = object['pagination']['links'][0]['uri'];
             dataService.makeRequest(nextURL).then(getRuns.bind(this));
           } else { // End
-            //console.log("all runs:", this.allRuns);
-            //console.log("all runs data:", this.allRunsData);
             this.firstRun = this.allRunsData[this.allRunsData.length - 1];
-            //console.log("first run:", this.firstRun)
             this.latestRun = this.allRunsData[0];
             this.chartData = this.allRuns.sort((a, b) => (a.value < b.value) ? 1 : -1);
+            this.chartData1 = this.recentRuns.sort((a, b) => (a.value < b.value) ? 1 : -1);
           }
         } else { // End
-          //console.log("all runs:", this.allRuns);
-          //console.log("all runs data:", this.allRunsData);
+          this.firstRun = this.allRunsData[this.allRunsData.length - 1];
+          this.latestRun = this.allRunsData[0];
           this.chartData = this.allRuns.sort((a, b) => (a.value < b.value) ? 1 : -1);
+          this.chartData1 = this.recentRuns.sort((a, b) => (a.value < b.value) ? 1 : -1);
         }
       }		
     }

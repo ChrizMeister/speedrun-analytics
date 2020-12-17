@@ -85,12 +85,12 @@
                         <!--Used/adapted from https://swimlane.gitbook.io/ngx-charts/examples-->
                         <ngx-charts-bar-vertical-stacked
                             [view]="[containerRef.offsetWidth - 50, 400]"
-                            [scheme]="colorScheme"
+                            [scheme]="colorSchemeStacked"
                             [results]="timesData"
                             [gradient]="gradient"
                             [xAxis]="showXAxis"
                             [yAxis]="showYAxis"
-                            [legend]="true"
+                            [legend]="false"
                             [showXAxisLabel]="showXAxisLabel"
                             [showYAxisLabel]="showYAxisLabel"
                             [xAxisLabel]="xAxisLabel"
@@ -116,7 +116,7 @@
                         <!--Used/adapted from https://swimlane.gitbook.io/ngx-charts/examples-->
                         <ngx-charts-line-chart
                             [view]="[containerRef.offsetWidth - 50, 600]"
-                            [scheme]="colorScheme"
+                            [scheme]="colorSchemeLine"
                             [legend]="true"
                             [showXAxisLabel]="true"
                             [showYAxisLabel]="true"

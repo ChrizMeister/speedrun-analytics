@@ -79,7 +79,6 @@ export class GameData {
 
 		this.categories1.push(objectRuns);
 		this.categories2.push(objectTimes)
-		//console.log(objectTimes)
 		this.totalRuns += numRuns;
 		if (name.length > 0){
 			this.numCategories += 1;
@@ -162,19 +161,25 @@ export class GameData {
 		var now = new Date();
 		var currentYear = now.getFullYear();
 		var releaseYear = parseInt(this.releaseDate.slice(0, 4));
+		var difference = currentYear - releaseYear;
 		if (releaseYear <= 2014){
 			for(var i = 6; i >= 0; i--){
 				var date = new Date();
 				date.setFullYear(date.getFullYear() - i);
 				dates.push(date);
 			}
-		} else if(releaseYear <= 2016){
+		} else if(difference > 2){
 			for(var i = (currentYear - releaseYear + 1); i >= 0; i--){
 				var date = new Date();
 				date.setFullYear(date.getFullYear() - i);
 				dates.push(date);
 			}
 		} else {
+			if (difference == 0){
+
+			} else {
+
+			}
 			for(var i = 3; i >= 0; i--){
 				var date = new Date();
 				date.setFullYear(date.getFullYear() - i);
@@ -183,13 +188,7 @@ export class GameData {
 					var dateMid = new Date();
 					dateMid.setFullYear(date.getFullYear());
 					var month = dateMid.getMonth();
-					if (month + 6 > 11){
-						month = (month + 6) % 11;
-						dateMid.setFullYear(dateMid.getFullYear() + 1)
-						dateMid.setMonth(month);
-					} else {
-						dateMid.setMonth(month + 6);
-					}
+					dateMid.setMonth(month + 6);
 					dates.push(dateMid);
 				}
 			}

@@ -102,7 +102,7 @@ h1 > a:hover{
 }
 
 .cardRecord:hover{
-  border: 2px solid  rgb(255, 187, 0);
+  border: 2px solid  #ffbb00;
 }
 
 .cardSmall {
@@ -156,7 +156,6 @@ div.cardSmall > h2 {
 
 .card:not(.card-large):hover {
   transform: translateY(-1px);
-  /*height:160px; */
   box-shadow: 0 4px 17px rgba(0, 0, 0, 0.35);
 }
 
@@ -254,8 +253,6 @@ div.cardSmall > h2 {
 }
 
 @media screen and (max-width: 800px) {
-
-
 
   .card-body-container.worldRecords{
     height: 50%;

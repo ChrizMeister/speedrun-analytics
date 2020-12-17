@@ -15,7 +15,6 @@ export class GamePageComponent implements OnInit {
 
   gameID:string;
   game:GameData;
-  //view: any[] = [800, 400];
   runsData: any[];
   timesData: any[];
   runsOverTimeData: any[];
@@ -36,6 +35,14 @@ export class GamePageComponent implements OnInit {
     domain: ['#31e7f7', '#2871d1', '#28d19b', '#5c4aff']
   };
 
+  colorSchemeStacked = {
+    domain: ['#ffbb00', '#5c4aff',]
+  };
+
+  colorSchemeLine = {
+    domain: ['#31e7f7','#2871d1','#ffbb00', '#5c4aff','#28d19b','#ff4800','#00ffbf','#e100ff', '#fff700', '#00ff04']
+  };
+
   constructor(private route: ActivatedRoute, private dataService: DataService) {
     Object.assign(this);
    }
@@ -51,20 +58,13 @@ export class GamePageComponent implements OnInit {
     var gameObject = await dataService.getGame(this.gameID);
     var data = gameObject['data'];
     var gameData = new GameData(data['id'], data['names']['international'], data['release-date'], data['weblink']);
-    
-    //console.log("game:", gameObject['data'])
-    //gameData.releaseDate = data['release-date'];
-    //gameData.weblink = data['weblink'];
-    //var links = data['links'];
+    //console.log("game:", data)
+
     //gameData.seriesLink=links[6]['uri'];
     this.processGenres(data, gameData);
     this.processPlatforms(data, gameData);
     this.processDevelopers(data, gameData);
 
-    //var categories = data['categories']['data'];
-    //this.processCategories(data['categories']['data'], gameData);
-
-    
     await this.processRecords(gameData);
 
     if(data['assets']['background'] != null){
@@ -82,29 +82,14 @@ export class GamePageComponent implements OnInit {
     this.timesData = this.game.categories2;
     this.game.analyzePastRuns();
     this.runsOverTimeData = this.game.categoriesOverTime;
-    console.log("this.runsOverTimeData:", this.runsOverTimeData);
-    //console.log(this.game.categories)
-    //console.log("full data:", this.runsOverTimeData);
+
+    //console.log("this.runsOverTimeData:", this.runsOverTimeData);
   }
 
-
-  // Set category info for this game
-  private processCategories(categories, gameData: GameData){
-    var categoryNames = [];
-    categories.forEach((category) => {
-      if(category['type'] == "per-game"){
-        categoryNames.push(category.name);
-        gameData.numCategories += 1;
-      }
-    });
-    gameData.categoriesString = "'";
-    gameData.categoriesString += categoryNames.join("', '");
-    gameData.categoriesString += "'";
-  }
-
+  // Process all full game records for this game
   private async processRecords(gameData){
     await this.dataService.getPerGameRecords(this.gameID).then((object) =>{
-      console.log("full per-game records:", object['data'])
+      //console.log("full per-game records:", object['data'])
       var data = object['data'];
       var runnerIds = [];
       data.forEach((record) =>{
@@ -139,7 +124,6 @@ export class GamePageComponent implements OnInit {
               runnerIds.push(run['run']['players'][0]['id']);
             }
           });
-          //console.log("runnerIds length:", runnerIds.length)
           gameData.numRunners = runnerIds.length;
           averageTime = parseInt((total /record['runs'].length).toFixed(0));
           var wrhData = record['players']['data'][0]; //worldRecordHolderData
@@ -157,10 +141,9 @@ export class GamePageComponent implements OnInit {
         }
         
       });
-      //console.log("runnerIds length:", runnerIds.length)
     });
 
-    if (true)
+    /*
     await this.dataService.getLevelRecords(this.gameID).then((object) =>{
       console.log("full level records:", object['data'])
       var data = object['data'];
@@ -173,13 +156,13 @@ export class GamePageComponent implements OnInit {
           if (numRuns > 0){
             //console.log("level record:", record);
           }
-          //gameData.addCategory("N/A", "Level Categories", numRuns, );
           //gameData.sortCategories();
         }  
       });
-    });
+    }); */
   }
 
+  // Iterate through list of developers and generate string of developers for this game
   private processDevelopers(data, gameData: GameData){
     if (data['romhack']){
       gameData.developers = ["Romhack (Fan Made)"];
@@ -194,6 +177,7 @@ export class GamePageComponent implements OnInit {
     }
   }
 
+  // Iterate through list of genres and generate string of genres for this game
   private processGenres(data, gameData){
     var genres = data['genres']['data'];
     var genreNames = [];
@@ -204,6 +188,7 @@ export class GamePageComponent implements OnInit {
     gameData.genresString = genreNames.join(", ");
   }
 
+  // Iterate through list of platforms and generate string of platforms for this game
   private processPlatforms(data, gameData){
     var platforms = data['platforms']['data'];
     var platformNames = [];

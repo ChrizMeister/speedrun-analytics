@@ -1,4 +1,4 @@
-import { Component, OnInit, ɵCompiler_compileModuleSync__POST_R3__ } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DataService } from '../../services/data.service'; 
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { CommonModule } from '@angular/common';  
@@ -24,9 +24,8 @@ export class HomePageComponent implements OnInit {
 				"Super Mario World",
 				"Super Mario Sunshine",
 				"Getting Over It With Bennett Foddy",
-				"Portal",]
+				"Portal"]
 
-	
 	// Variables used/adapted from https://swimlane.gitbook.io/ngx-charts/examples
 	chartData1: any[];	
 	chartData2: any[];
@@ -42,6 +41,10 @@ export class HomePageComponent implements OnInit {
 
 	colorScheme = {
 		domain: ['#31e7f7', '#2871d1', '#28d19b', '#5c4aff']
+	};
+
+	colorSchemeLine = {
+		domain: ['#31e7f7','#2871d1','#ffbb00', '#5c4aff','#28d19b','#ff4800','#00ffbf','#e100ff', '#fff700', '#00ff04']
 	};
 	
 	recentRuns;
@@ -64,21 +67,21 @@ export class HomePageComponent implements OnInit {
 		this.getNewestRuns(dataService);
 		
 		var storage = window.sessionStorage;
-		// storage.removeItem("gamesList");
-		if (!storage.getItem("gamesList")){
-			console.log("Storage Empty")
-			storage.setItem("gamesList", "[]");
-			this.getMostPopularGamesInfo(dataService, storage, 10);
-		} else {
+		var numGames = 10;
+		// storage.removeItem("gamesList"); // For testing
+		if (storage.getItem("gamesList") && JSON.parse(storage.getItem("gamesList")).length == numGames){
 			var gamesList: any[] = JSON.parse(storage.getItem("gamesList"));
-			console.log("gamesList:", gamesList);
+			//console.log("gamesList:", gamesList);
 			this.mostPopularGames = gamesList;
 			var tempChartData = [];
 			gamesList.forEach((game) =>{
 				tempChartData.push(game['chartData']);
-				//console.log(game)
 			}); 
 			this.chartData2 = tempChartData;
+		} else {
+			//console.log("Storage Empty")
+			storage.setItem("gamesList", "[]");
+			this.getMostPopularGamesInfo(dataService, storage, numGames);
 		}
 	}
 
@@ -103,7 +106,7 @@ export class HomePageComponent implements OnInit {
 			var numRuns = 0;
 			var allPlayers = [];
 			var dates = [];
-			var startDate = new Date("2014-03-01"); //Date that Speedrun.com was created
+			var startDate = new Date("2014-03-02"); //Date that Speedrun.com was created
 			for (var i = 0; i <= 13; i++){
 				var date = new Date(startDate);
 				date.setMonth(date.getMonth() + (6 * i))
@@ -205,19 +208,17 @@ export class HomePageComponent implements OnInit {
 				if (object['pagination']['links'].length > 1){ // Middle
 					var nextURL = object['pagination']['links'][1]['uri'];
 					count += 1;
-					//console.log(count)
 					dataService.makeRequest(nextURL).then(getRuns.bind(this));
 				} else {
 					if (object['pagination']['links'].length > 0){
 						if (object['pagination']['links'][0]['rel'] == "next"){ // Start
 							var nextURL = object['pagination']['links'][0]['uri'];
 							count += 1;
-							//console.log(count)
 							dataService.makeRequest(nextURL).then(getRuns.bind(this));
 						}
 					}
 				}
-			}	else {
+			} else {
 				this.recentRuns.sort((a, b) => (a.value < b.value) ? 1 : -1);
 				this.playerRunFrequency.sort((a, b) => (a.value < b.value) ? 1 : -1);
 				this.chartData1 = this.recentRuns.slice(0, 10);

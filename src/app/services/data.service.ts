@@ -12,10 +12,10 @@ export class DataService {
 	public gamesList: Array<{name:string, id:string}>;
 	public platformsList: Array<{name:string, id:string}> = [];
 	private trackAPICalls = false;
+	
 	constructor() { 
 		this.gamesList = fullGamesList;
 		this.platformsList = fullPlatformsList;
-
 	}
 
 	// Make request and return a promise with an object representing the response data
