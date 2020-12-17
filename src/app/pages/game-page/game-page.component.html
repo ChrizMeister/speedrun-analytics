@@ -1,10 +1,13 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
+<body *ngIf="!game" style="text-align: center; justify-content: center;">
+    <h1 >Loading...</h1>
+    <div class="loaderCenter"></div>
+</body>
 <body [style.background]= "'url(' + game.backgroundLink + ')'" [style.background-attachment]="'fixed'" *ngIf="game">
 
     <div class="toolbar" role="banner">
         <a class="card card-back" href="/">     
-            <span class="material-icons">arrow_back </span> <span>Home</span>
+            <span class="material-icons">home</span><span>Home</span> <!--From https://material.io/resources/icons/?style=baseline-->
         </a>
         <div class="spacer"></div>
         <img class="logo" width="35" alt="Speedrun.com logo" src="https://www.speedrun.com/images/trophy.png" />
@@ -51,7 +54,8 @@
                     <h1>       
                         Distribution of Runs by Category
                     </h1>
-                    <div *ngIf="runsData">
+                    <div *ngIf="runsData && runsData.length > 0; else elseBlock">
+                        <!--Used/adapted from https://swimlane.gitbook.io/ngx-charts/examples-->
                         <ngx-charts-bar-vertical
                             [view]="[containerRef.offsetWidth - 50, 400]"
                             [scheme]="colorScheme"
@@ -66,6 +70,7 @@
                             [yAxisLabel]="yAxisLabel1">
                         </ngx-charts-bar-vertical>
                     </div>
+                    <ng-template #elseBlock><h1>No Runs to Show</h1></ng-template>
                     <div *ngIf="!runsData">
                         <h1>Loading chart...</h1>
                         <div class="loader"></div>
@@ -76,7 +81,8 @@
                     <h1>       
                         World Record & Average Times by Category
                     </h1>
-                    <div *ngIf="timesData">
+                    <div *ngIf="timesData && timesData.length > 0; else elseBlock">
+                        <!--Used/adapted from https://swimlane.gitbook.io/ngx-charts/examples-->
                         <ngx-charts-bar-vertical-stacked
                             [view]="[containerRef.offsetWidth - 50, 400]"
                             [scheme]="colorScheme"
@@ -91,23 +97,25 @@
                             [yAxisLabel]="yAxisLabel2">
                         </ngx-charts-bar-vertical-stacked>
                     </div>
+                    <ng-template #elseBlock><h1>No Runs to Analyze</h1></ng-template>
                     <div *ngIf="!timesData">
                         <h1>Loading chart...</h1>
                         <div class="loader"></div>
                     </div>
                 </div>
-                <div class="card-body-container" #containerRef>
-                    <h1 *ngIf="game.numCategories > 5; else elseBlock">       
+                <div class="card-body-container lineGraph" #containerRef>
+                    <h1 *ngIf="game.numCategories > 5; else elseBlock1">       
                         Number of Runs in Top 5 Categories Over Time
                     </h1>
-                    <ng-template #elseBlock>
+                    <ng-template #elseBlock1>
                         <h1>       
                             Number of Runs in All Categories Over Time
                         </h1>
                     </ng-template>
-                    <div *ngIf="runsOverTimeData">
+                    <div *ngIf="runsOverTimeData && runsOverTimeData.length > 0; else elseBlock2">
+                        <!--Used/adapted from https://swimlane.gitbook.io/ngx-charts/examples-->
                         <ngx-charts-line-chart
-                            [view]="[containerRef.offsetWidth - 50, 400]"
+                            [view]="[containerRef.offsetWidth - 50, 600]"
                             [scheme]="colorScheme"
                             [legend]="true"
                             [showXAxisLabel]="true"
@@ -120,6 +128,7 @@
                             [results]="runsOverTimeData">
                         </ngx-charts-line-chart>
                     </div>
+                    <ng-template #elseBlock2><h1>No Runs to Show</h1></ng-template>
                     <div *ngIf="!runsOverTimeData">
                         <h1>Loading chart...</h1>
                         <div class="loader"></div>
@@ -132,21 +141,24 @@
                     </h1>
                     <div class="card-container">
                         <div *ngFor="let category of game.categories">
-                            <a [href] = "category.worldRecordHolderLink">
-                                <div class="cardSmall">
-                                    <h2 class="top" *ngIf="category.name.length > 15; else elseBlock1">Category: 
-                                        <span class="smallBlueText">{{category.nameShort}}</span></h2>
-                                    <ng-template #elseBlock1>
-                                        <h2 class="top">Category: <span style="color:#31e7f7;">{{category.name}}</span></h2>
-                                    </ng-template>
-                                    <h2 *ngIf="category.worldRecordHolder.name > 15; else elseBlock2">Runner:
-                                    <span class="smallPurpleText">{{category.worldRecordHolderNameShort}}</span></h2>
-                                    <ng-template #elseBlock2>
-                                        <h2>Runner: <span style="color:#5c4aff">{{category.worldRecordHolder.name}}</span></h2>
-                                    </ng-template>
-                                    <h2>Time: <span style="color:rgb(0, 255, 179)">{{category.bestTimeString}}</span></h2>
-                                </div>
-                            </a>
+                            <div *ngIf="category.name != 'Level Categories'">
+                                <a [href] = "category.worldRecordHolderLink">
+                                    <div class="cardSmall">
+                                        <h2 class="top" *ngIf="category.name.length > 15; else elseBlock1">Category: 
+                                            <span class="smallBlueText">{{category.nameShort}}</span></h2>
+                                        <ng-template #elseBlock1>
+                                            <h2 class="top">Category: <span style="color:#31e7f7;">{{category.name}}</span></h2>
+                                        </ng-template>
+                                        <h2 *ngIf="category.worldRecordHolder.name > 15; else elseBlock2">Runner:
+                                        <span class="smallPurpleText">{{category.worldRecordHolderNameShort}}</span></h2>
+                                        <ng-template #elseBlock2>
+                                            <h2>Runner: <span style="color:#5c4aff">{{category.worldRecordHolder.name}}</span></h2>
+                                        </ng-template>
+                                        <h2>Time: <span style="color:rgb(0, 255, 179)">{{category.bestTimeString}}</span></h2>
+                                    </div>
+                                </a>
+                            </div>
+                            
                             
                         </div>
                         
@@ -175,7 +187,7 @@
                         </h2>
                     </div>
                     <div>
-                        <h2 class="basic" *ngIf="game.categories[0]">
+                        <h2 class="basic" *ngIf="game.categories[0] && game.categories[0].name != 'Level Categories'">
                             Fastest time in <span class="blue">{{game.categories[0].name}}</span> category: 
                             <span class="green">{{game.categories[0].bestTimeString}} </span> 
                             by <span class="purple">{{game.categories[0].worldRecordHolder['name']}}</span>

@@ -5,26 +5,22 @@ import { DataService } from '../../services/data.service';
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None // From https://angular.io/guide/view-encapsulation for customizing the search bar with CSS
 })
 
 export class SearchComponent implements OnInit {
 
-	//searchString:string;
-	//searchCategory:string; //User or Game
-	//searchCategories:Array<string> = ["Game", "User"];
 	gamesList: Array<{name:string, id:string}>;
 
-
-	constructor(private dataService: DataService) {
-	}
+	constructor(private dataService: DataService) {}
 
 	ngOnInit(): void {	
 		this.gamesList = this.dataService.gamesList;
 		this.addSuggestions();
 	}
 
-	// Generate suggestions for the user's input based on the list of all games on Speedrun.com (users come next)
+	// Generate game and user suggestions based on the user's input in the search bar
+	// Adapted from https://www.w3schools.com/howto/howto_js_autocomplete.asp
 	addSuggestions(){
 		const gamesList = this.gamesList;
 		var searchBar = <HTMLInputElement>document.getElementById("search");
@@ -57,7 +53,6 @@ export class SearchComponent implements OnInit {
 						gameResults.push(item['name']);
 						sugg.setAttribute("class", classItemName);
 						sugg.setAttribute("href", '/game/' + item['id']);
-						//sugg.setAttribute("target", '_blank');
 						sugg.innerHTML += "<div class='" + classItemName + "'>" + item['name'] + "</div>";
 						suggestions.appendChild(sugg);
 					}
@@ -77,7 +72,6 @@ export class SearchComponent implements OnInit {
 							suggestions.appendChild(usersHeader);
 							usersList.forEach(function(item:{name, id}){
 								if(item['name'].toLowerCase().includes(val.toLowerCase())){
-									//console.log("user:", item['name']);
 									var sugg = document.createElement("a");
 									sugg.setAttribute("class", classItemName);
 									sugg.setAttribute("href", '/user/' + item['id']);
@@ -87,14 +81,12 @@ export class SearchComponent implements OnInit {
 							});
 						});
 					} else {
-						//console.log("SEARCHING")
+
 						var users = dataService.searchForUser(this.value);
 						userResults = users;
 						userResults.then((data) =>{
-							//console.log("users:", data['data']);
 							data['data'].forEach((user) =>{
 								usersList.push({name: user['names']['international'], id: user['id']});
-								//console.log({name: user['names']['international'], id: user['id']});
 							});
 							numUsers = usersList.length;
 							var usersHeader = document.createElement("div");
@@ -108,9 +100,6 @@ export class SearchComponent implements OnInit {
 									sugg.setAttribute("class", classItemName);
 									sugg.setAttribute("href", '/user/' + item['id']);
 									sugg.innerHTML += "<div class='" + classItemName + "'>" + item['name'] + "</div>";
-									sugg.addEventListener("click", function(e){
-
-									});
 									suggestions.appendChild(sugg);
 								}
 							});
@@ -122,7 +111,6 @@ export class SearchComponent implements OnInit {
 		});
 
 		function closeLists(element){
-
 			var x = document.getElementsByClassName(classListName);
 			for (var i = 0; i < x.length; i++) {
 				if (element != x[i] && element.id != "search" && element.id != "gamesHeader") {

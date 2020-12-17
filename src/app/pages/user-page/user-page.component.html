@@ -1,9 +1,12 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-<body>
+<body *ngIf="!user" style="text-align: center; justify-content: center;">
+    <h1 >Loading...</h1>
+    <div class="loaderCenter"></div>
+</body>
+<body *ngIf="user">
     <div class="toolbar" role="banner">
         <a class="card card-back" href="/">
-            <span class="material-icons">home </span> <span>Home</span>
+            <span class="material-icons">home </span> <span>Home</span> <!--From https://material.io/resources/icons/?style=baseline-->
         </a>
         <div class="spacer"></div>
         <img class="logo" width="35" alt="Speedrun.com logo" src="https://www.speedrun.com/images/trophy.png" />
@@ -36,9 +39,9 @@
                     </h1>
                     <h1>Total Runs: {{totalNumRuns}}</h1>
                     <h1>World Records: {{user.worldRecords}}</h1>
-                    <h1 *ngIf="firstRun">First ever run: <a href="/game/{{firstRun.game.id}}">{{firstRun.game.data.names.international}}</a>, 
+                    <h1 *ngIf="firstRun">First ever run: <a href="/game/{{firstRun.game.data.id}}">{{firstRun.game.data.names.international}}</a>, 
                         {{firstRun.category.data.name}} on {{firstRun.date}}</h1>
-                    <h1 *ngIf="latestRun">Latest run: <a href="/game/{{latestRun.game.id}}">{{latestRun.game.data.names.international}}</a>, 
+                    <h1 *ngIf="latestRun">Latest run: <a href="/game/{{latestRun.game.data.id}}">{{latestRun.game.data.names.international}}</a>, 
                         {{latestRun.category.data.name}} on {{latestRun.date}}</h1>
                 </div>
                 
@@ -48,6 +51,7 @@
                     Distribution of Runs by {{user.name}} by Game
                 </h1>
                 <div *ngIf="chartData">
+                    <!--Used/adapted from https://swimlane.gitbook.io/ngx-charts/examples-->
                     <ngx-charts-bar-vertical 
                         [view]="[containerRef.offsetWidth - 50, 400]"
                         [scheme]="colorScheme"
@@ -74,6 +78,7 @@
                     Recent Runs by {{user.name}} by Game
                 </h1>
                 <div *ngIf="chartData1">
+                    <!--Used/adapted from https://swimlane.gitbook.io/ngx-charts/examples-->
                     <ngx-charts-bar-vertical
                     [view]="[containerRef.offsetWidth - 50, 400]"
                     [scheme]="colorScheme"

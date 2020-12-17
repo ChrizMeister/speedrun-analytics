@@ -6,16 +6,17 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-
-/*
-a > div.onHover {
-  display: none; 
+ngx-charts-line-chart {
+  fill: #e9e9e9 !important;
+  font-size: 26px;
+  font-weight: 450;
 }
 
-a:hover > div.onHover { 
-  display: block; 
-}*/
+ngx-charts-bar-vertical {
+  fill: #e9e9e9 !important;
+  font-size: 26px;
+  font-weight: 450;
+}
 
 .link {
   transition: all 0.2s ease-in-out;
@@ -118,7 +119,6 @@ h3 {
   border: 2px solid  rgb(255, 230, 0);
 }
 
-
 .card-container .card:not(:last-child) {
   margin-right: 0;
 }
@@ -144,6 +144,11 @@ h3 {
   height:95%;
 }
 
+.card.card-med{
+  width:1380px;
+  height:95%;
+}
+
 h1.stats{
   color:rgb(204, 204, 204);
   font-size: 30px;
@@ -163,6 +168,11 @@ h1, h2, h3 {
 @media screen and (max-width: 1400px) {
   .card-container {
     width: 100%;
+  }
+
+  .card.card-med{
+    width:95%;
+    height:95%;
   }
 }
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver'; // https://www.npmjs.com/package/file-saver
 import fullGamesList from '../../assets/fullGamesList.json';
 import fullPlatformsList from '../../assets/fullPlatformsList.json';
 
@@ -66,6 +66,17 @@ export class DataService {
 		return id;
 	}
 
+	// Return id of a game when given it's name
+	gameIDToName(id:string):string{
+		var name = "_";
+		this.gamesList.forEach((game) => {
+			if(game['id'] === id){
+				name = game['name'];
+			}
+		});
+		return name;
+	}
+
 	//Get data of a given game
 	getGame(id:string): Promise<{}>{
 		const endpoint = "/games/" + id + "?embed=categories,platforms,genres,developers";
@@ -73,9 +84,15 @@ export class DataService {
 	}
 
 	//Get the records for all categories which are per-game in a given game
-	getGameRecords(id:string){
-		//records?miscellaneous=no&scope=full-game
+	getPerGameRecords(id:string){
 		const endpoint = "/games/" + id + "/records?scope=full-game&embed=category,players&top=4000";
+		//const endpoint = "/games/" + id + "/records?embed=category,players&top=4000";
+		return this.makeRequest(this.apiURL + endpoint);
+	}
+
+	//Get the records for all categories which are per-game in a given game
+	getLevelRecords(id:string){
+		const endpoint = "/games/" + id + "/records?scope=levels&embed=category,players,level&top=4000";
 		return this.makeRequest(this.apiURL + endpoint);
 	}
 
@@ -116,12 +133,9 @@ export class DataService {
 	getAllGames() {
 		function addGamesToList(response){
 			response.json().then(function(data){
-				
 				data['data'].forEach(function(item){
 					this.gamesList.push({name: item['names']['international'], id: item['id']});
 				}.bind(this));
-				
-				
 				if (data['pagination']['links'].length > 1){ // Middle
 					var nextURL = data['pagination']['links'][1]['uri'];
 					if(this.trackAPICalls) console.log("API Called")
@@ -134,7 +148,7 @@ export class DataService {
 					} else { // End
 						var blob = new Blob([JSON.stringify(this.gamesList)], {type: "application/json"});
 						console.log(this.gamesList.length);
-						//saveAs(blob, "fullGamesList.json");
+						//saveAs(blob, "fullGamesList.json"); // FileSaver function
 					}
 				}		
 			}.bind(this));
@@ -153,9 +167,7 @@ export class DataService {
 				data['data'].forEach(function(item){
 					this.platformsList.push({name: item['name'], id: item['id']});
 				}.bind(this));
-				
 				//console.log("length:", this.gamesList.length);
-				
 				if (data['pagination']['links'].length > 1){ // Middle
 					var nextURL = data['pagination']['links'][1]['uri'];
 					if(this.trackAPICalls) console.log("API Called")
@@ -166,10 +178,9 @@ export class DataService {
 						if(this.trackAPICalls) console.log("API Called")
 						fetch(nextURL).then(addPlatformsToList.bind(this));
 					} else { // End
-						
 						var blob = new Blob([JSON.stringify(this.platformsList)], {type: "application/json"});
 						//console.log(this.platformsList.length);
-						//saveAs(blob, "fullPlatformsList.json");
+						//saveAs(blob, "fullPlatformsList.json"); // FileSaver function
 					}
 				}		
 			}.bind(this));

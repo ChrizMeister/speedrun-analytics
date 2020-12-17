@@ -13,8 +13,8 @@ export class GameData {
 	genres;
 	genresString: string = "";
 	numCategories: number;
-	categories: Array<CategoryData> = [];
-	categoriesString: string = "";
+	categories;
+	categoriesString: string;
 	categories1;
 	categories2;
 	categoriesOverTime;
@@ -33,11 +33,13 @@ export class GameData {
 	fastestRunner;
 	numRunners;
 
-	constructor(id:string = "", name: string = "") {
+	constructor(id:string = "", name: string = "", releaseDate = "", weblink = "https://speedrun.com") {
+		this.releaseDate = releaseDate;
 		this.id = id;
 		this.name = name;
-		this.weblink = "https://speedrun.com";
+		this.weblink = weblink;
 		this.numCategories = 0;
+		this.categories = [];
 		this.categories1 = [];
 		this.categories2 = [];
 		this.mostPopularPercent = "100%";
@@ -49,31 +51,61 @@ export class GameData {
 		this.numCategories = 0;
 		this.numRunners = 0;
 		this.fastestRunner = "";
+		this.categoriesString = "";
 	}
 
 	public fastestTimeString(){
-
 		var bestString = new CategoryData().convertTime(new Date(this.fastestTime * 1000).toISOString().substr(11, 8));
 		return bestString;
 	}
 
-	public addCategory(id, name, numRuns = 0, bestTime = 999999, worstTime = 999999, averageTime = 999999, runs = null, worldRecordHolder = {}){
-		var objectRuns = {name: name, value: numRuns};
-		var bestString = new CategoryData().convertTime(new Date(bestTime * 1000).toISOString().substr(11, 8));
-		var averageString = new CategoryData().convertTime(new Date(averageTime * 1000).toISOString().substr(11, 8));
-		//var worstString = new Date(worstTime * 1000).toISOString().substr(11, 8)
-		bestTime = bestTime / 60;
-		averageTime = averageTime / 60;
-		worstTime = worstTime / 60;
-		var objectTimes = {"name": name, "series": [{name: "World Record: " + bestString, value: bestTime}, 
-													{name: "Average Time: " + averageString, value: averageTime}]};
-													//{name: "Worst Time: " + worstString, value: worstTime}]}
-		this.categories.push(new CategoryData(id, name, numRuns, bestTime, worstTime, averageTime, runs, worldRecordHolder))
+	public addCategory(id:string = "", name:string, numRuns = 0, bestTime = 999999, worstTime = 999999, averageTime = 999999, 
+					   runs = [], worldRecordHolder = {}, type:string = "per-game"){
+		if (type == "per-game"){
+			var objectRuns = {name: name, value: numRuns};
+			var bestString = new CategoryData().convertTime(new Date(bestTime * 1000).toISOString().substr(11, 8));
+			var averageString = new CategoryData().convertTime(new Date(averageTime * 1000).toISOString().substr(11, 8));
+			//var worstString = new Date(worstTime * 1000).toISOString().substr(11, 8)
+			bestTime = bestTime / 60;
+			averageTime = averageTime / 60;
+			worstTime = worstTime / 60;
+			var objectTimes = {"name": name, "series": [{name: "World Record: " + bestString, value: bestTime}, 
+														{name: "Average Time: " + averageString, value: averageTime}]};
+														//{name: "Worst Time: " + worstString, value: worstTime}]}
+			this.categories.push(new CategoryData(id, name, numRuns, bestTime, worstTime, averageTime, runs, worldRecordHolder))
 
-		this.categories1.push(objectRuns);
-		this.categories2.push(objectTimes)
-		//console.log(objectTimes)
-		this.totalRuns += numRuns;
+			this.categories1.push(objectRuns);
+			this.categories2.push(objectTimes)
+			//console.log(objectTimes)
+			this.totalRuns += numRuns;
+			if (name.length > 0){
+				this.numCategories += 1;
+				if (this.categoriesString.length == 0){
+					this.categoriesString = "'" + name + "'";
+				} else {
+					this.categoriesString += ", '" + name + "'";
+				}
+			}
+		} else {
+			if (!this.categoriesString.includes("Level Categories")){
+				if (this.categoriesString.length == 0){
+					this.categoriesString = "'" + "Level Categories" + "'";
+				} else {
+					this.categoriesString += ", '" + "Level Categories" + "'";
+				}
+			}
+			var objectRuns = {name: "Level Categories", value: numRuns};
+			var index = this.categoryNameToIndex("Level Categories");
+			if (index == -1){
+				this.categories1.push(objectRuns);
+			} else {
+				this.categories1[index].value += numRuns;
+				//console.log(this.categories1[index])
+			}
+			this.totalRuns += numRuns;
+			this.numCategories += 1;
+		}
+		
 	}
 
 	public categoryNameToIndex(name): number {
@@ -87,27 +119,34 @@ export class GameData {
 
 	public sortCategories(){
 		var length = this.categories.length;
-		for(var i = 0; i < length; i++){
-			for(var j = i + 1; j < length; j++){
-				if (this.categories[i].numRuns < this.categories[j].numRuns){
-					var temp = this.categories[i];
-					this.categories[i] = this.categories[j];
-					this.categories[j] = temp;
-
-					var temp1 = this.categories1[i];
-					this.categories1[i] = this.categories1[j];
-					this.categories1[j] = temp1;
-
-					temp = this.categories2[i];
-					this.categories2[i] = this.categories2[j];
-					this.categories2[j] = temp;
+		if (this.categories.length > 0){
+			for(var i = 0; i < length; i++){
+				for(var j = i + 1; j < length; j++){
+					if (this.categories[i].numRuns < this.categories[j].numRuns){
+						var temp = this.categories[i];
+						this.categories[i] = this.categories[j];
+						this.categories[j] = temp;
+						if (this.categories1.length > 0){
+							var temp1 = this.categories1[i];
+							this.categories1[i] = this.categories1[j];
+							this.categories1[j] = temp1;
+						}
+						if (this.categories2.length > 0){
+							temp = this.categories2[i];
+							this.categories2[i] = this.categories2[j];
+							this.categories2[j] = temp;
+						}
+					}
 				}
 			}
 		}
+		
 
 		this.topCategories = this.categories.slice(0, 5);
 		//console.log("top categories:", this.topCategories)
-		this.mostPopularPercent = (100 * this.categories[0].numRuns / this.totalRuns).toFixed(0).toString() + "%";
+		if (this.categories[0]){
+			this.mostPopularPercent = (100 * this.categories[0].numRuns / this.totalRuns).toFixed(0).toString() + "%";
+		}
 	}
 
 	public getPastRuns(){
@@ -121,25 +160,44 @@ export class GameData {
 				date.setFullYear(date.getFullYear() - i);
 				dates.push(date);
 			}
-		} else {
+		} else if(releaseYear <= 2016){
 			for(var i = (currentYear - releaseYear + 1); i >= 0; i--){
 				var date = new Date();
 				date.setFullYear(date.getFullYear() - i);
 				dates.push(date);
 			}
+		} else {
+			for(var i = 3; i >= 0; i--){
+				var date = new Date();
+				date.setFullYear(date.getFullYear() - i);
+				dates.push(date);
+				if (i > 0){
+					var dateMid = new Date();
+					dateMid.setFullYear(date.getFullYear());
+					var month = dateMid.getMonth();
+					if (month + 6 > 11){
+						month = (month + 6) % 11;
+						dateMid.setFullYear(dateMid.getFullYear() + 1)
+						dateMid.setMonth(month);
+					} else {
+						dateMid.setMonth(month + 6);
+					}
+					dates.push(dateMid);
+				}
+			}
 		}
-		
-		
 
 		this.topCategories.forEach((category: CategoryData) =>{
-			var array = [];
+			var runs = [];
 			dates.forEach((date) =>{
 				//console.log("category:", category)
 				var numRuns = category.numRunsInPast(date);
-				array.push({value: numRuns, name: date.toISOString().slice(0, 4)})
+				var year = date.toISOString().slice(0, 4);
+				var month = date.toLocaleDateString('en-US', {month: 'short'})
+
+				runs.push({value: numRuns, name: month + " " + year})
 			});
-			this.categoriesOverTime.push({name: category['name'], series: array});
-			//console.log("array:", array);
+			this.categoriesOverTime.push({name: category['name'], series: runs});
 		});
 	}
 

@@ -20,13 +20,11 @@ export class UserPageComponent implements OnInit {
   totalNumRuns:number;
   allRunsData; //Array containing all runs and their data
   allRuns; //Array of runs containing object with the name of the game and the number of runs
-  view: any[] = [800, 400];
+  
+  // Variables used/adapted from https://swimlane.gitbook.io/ngx-charts/examples
   chartData: any[];
   chartData1: any[];
-  recentRuns: any[];
-  worldRecords;
-  firstRun;
-  latestRun;
+  recentRuns;
 
   showXAxis = true;
   showYAxis = true;
@@ -41,8 +39,12 @@ export class UserPageComponent implements OnInit {
     domain: ['#31e7f7', '#2871d1', '#28d19b', '#5c4aff']
   };
 
+  worldRecords;
+  firstRun;
+  latestRun;
+
   constructor(private route: ActivatedRoute, private dataService: DataService) { 
-    this.pictureLink = "../../../assets/unknown.png"
+    this.pictureLink = "../../../assets/unknown.png";
     this.user = new UserData();
     this.totalNumRuns = 0;
     this.allRuns = [];
@@ -52,101 +54,120 @@ export class UserPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const dataService = this.dataService;
     this.userID = this.route.snapshot.paramMap.get('id');
-    this.getAllRuns();
-    dataService.getUserInfo(this.userID).then((userObject: UserData) => {
-      
-      var data = userObject['data'];
-      console.log("user data:", data);
-      var userData = new UserData(data['id'], data['names']['international']);
-      userData.link = data['weblink'];
-      if (data['location']['region']){
-        userData.userLocation = data['location']['region']['names']['international'];
-      } else {
-        userData.userLocation = data['location']['country']['names']['international'];
-      }
-      if(data['twitch'] != null){
-        userData.twitch = data['twitch']['uri']
-      }
-      if(data['twitter'] != null){
-        userData.twitter = data['twitter']['uri']
-      }
-      userData.userSince = (new Date(data['signup'])).toLocaleDateString();
-      
-      
-      dataService.makeRequest(data['links'][3]['uri'] + "?embed=game,category,run").then((object) =>{
-          object['data'].sort((a, b) => (a.place > b.place) ? 1 : -1);
-
-          userData.personalBests = object['data'];
-          userData.topFiveRuns = object['data'].slice(0,5);
-
-          object['data'].forEach((pb) => {
-            var category = pb['category']['data'];
-            var game = pb['game']['data'];
-            var gameName = game['names']['international'];
-            var shortGameName = gameName;
-            if (gameName.length > 16){
-              shortGameName = gameName.substr(0, 16) + "...";
-            }
-            var catName = category['name'];
-            var shortCatName = catName;
-            if (catName.length > 11){
-              shortCatName = catName.substr(0, 11) + "...";
-            }
-            
-            var wrObject = {game: gameName, category: catName, gameId: game['id'], link: "/game/" + game['id'], weblink: pb['run']['weblink'],
-                            shortGameName: shortGameName, shortCatName: shortCatName}
-            if(pb['place'] == 1){
-              if (this.worldRecords.length == 0){
-                userData.worldRecords += 1;
-                this.worldRecords.push(wrObject);
-              } else {
-                var found = false;
-                for(var i = 0; i < this.worldRecords.length; i++){
-                  //console.log(worldRecords[i])
-                  //console.log(wrObject)
-                  if(this.worldRecords[i]['category'] == wrObject['category'] && this.worldRecords[i]['gameId'] == wrObject['gameId']){
-                    found = true;
-                    break;
-                  }
-                }
-                if (!found){
-                  userData.worldRecords += 1;
-                  this.worldRecords.push(wrObject);
-                }
-              }
-     
-            }
-          });
-          //console.log("worldRecords:",  this.worldRecords);
-          //console.log("personal bests:", object['data']);
-          //console.log("top 5 runs:", userData.topFiveRuns);
-          
-      }); 
-      this.user = userData;
-      this.pictureLink = "https://speedrun.com/themes/user/" + this.user.name + "/image.png";
-      
-    });
+    this.getUserInfo();
   }
 
+  // Get all information about the user
+  private async getUserInfo(){
+    const dataService = this.dataService;
+    var userObject = await dataService.getUserInfo(this.userID);
+    var data = userObject['data'];
+    console.log("user data:", data);
+    var userData = new UserData(data['id'], data['names']['international']);
+    userData.link = data['weblink'];
+    if (data['location']['region']){
+      userData.userLocation = data['location']['region']['names']['international'];
+    } else {
+      userData.userLocation = data['location']['country']['names']['international'];
+    }
+    if(data['twitch'] != null){
+      userData.twitch = data['twitch']['uri']
+    }
+    if(data['twitter'] != null){
+      userData.twitter = data['twitter']['uri']
+    }
+    userData.userSince = (new Date(data['signup'])).toLocaleDateString();
+    var personalBestsLink = data['links'][3]['uri'];
+    await this.getPersonalBestsInfo(dataService, userData, personalBestsLink);
+    this.user = userData;
+    var picLink = "https://speedrun.com/themes/user/" + this.user.name + "/image.png";
+    
+    this.getAllRuns();
+    this.testPictureLink(picLink);
+  }
+
+  // Use https://allorigins.win/ to test if the user has uploaded a profile picture.
+  // If they have, load that picture otherwise use the default image.
+  testPictureLink(picLink){
+    fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(picLink)}`).then(response => {
+        if (response.ok){
+          return response.json();
+        } else {
+          throw new Error('Network error');
+        }
+      }).then((data) => {
+        if(!data.contents.includes("error")){
+          this.pictureLink = picLink;
+        }
+      });
+  }
+
+  // Get info about user's personal best runs
+  async getPersonalBestsInfo(dataService, userData, personalBestsLink){
+    dataService.makeRequest(personalBestsLink + "?embed=game,category,run").then((object) =>{
+      console.log("pbs:", object)
+      object['data'].sort((a, b) => (a.place > b.place) ? 1 : -1);
+      userData.personalBests = object['data'];
+      //userData.topFiveRuns = object['data'].slice(0,5);
+      object['data'].forEach((pb) => {
+        var category = pb['category']['data'];
+        var game = pb['game']['data'];
+        var gameName = game['names']['international'];
+        var shortGameName = gameName;
+        if (gameName.length > 16){
+          shortGameName = gameName.substr(0, 16) + "...";
+        }
+        var catName = category['name'];
+        var shortCatName = catName;
+        if (catName.length > 11){
+          shortCatName = catName.substr(0, 11) + "...";
+        }
+        
+        var wrObject = {game: gameName, category: catName, gameId: game['id'], link: "/game/" + game['id'], weblink: pb['run']['weblink'],
+                        shortGameName: shortGameName, shortCatName: shortCatName}
+        if(pb['place'] == 1){
+          if (this.worldRecords.length == 0){
+            userData.worldRecords += 1;
+            this.worldRecords.push(wrObject);
+          } else {
+            var found = false;
+            for(var i = 0; i < this.worldRecords.length; i++){
+              //console.log(worldRecords[i])
+              //console.log(wrObject)
+              if(this.worldRecords[i]['category'] == wrObject['category'] && this.worldRecords[i]['gameId'] == wrObject['gameId']){
+                found = true;
+                break;
+              }
+            }
+            if (!found){
+              userData.worldRecords += 1;
+              this.worldRecords.push(wrObject);
+            }
+          }
+        }
+      });
+      //console.log("worldRecords:",  this.worldRecords);
+      //console.log("personal bests:", object['data']);
+      //console.log("top 5 runs:", userData.topFiveRuns);   
+    }); 
+  }
+
+  // Recursively call the API to get all runs that this user has submitted to Speedrun.com
   async getAllRuns(){
     const userID = this.userID;
     const dataService = this.dataService;
-
     function getRuns(object){
       this.totalNumRuns += object['data'].length;
       //console.log("Num runs:", this.totalNumRuns);
       object['data'].forEach((run) => {
         this.allRunsData.push(run);
-        
         var name = run['game']['data']['names']['international'];
         if(this.nameToIndex(this.allRuns, name) == -1){
           this.allRuns.push({name: name, value: 1, gameId: run['game']['data']['id']});
         } else {
           this.allRuns[this.nameToIndex(this.allRuns, name)]['value'] += 1;
         }
-
         var total = 0;
         this.recentRuns.forEach((run) => {
           total += run['value'];
@@ -160,11 +181,9 @@ export class UserPageComponent implements OnInit {
           }
         } else {
           this.chartData1 = this.recentRuns.sort((a, b) => (a.value < b.value) ? 1 : -1);
-          //console.log(this.recentRuns)
+          console.log(this.recentRuns)
         }
-        
       });
-
       if (object['pagination']['links'].length > 1){ // Middle
         var nextURL = object['pagination']['links'][1]['uri'];
         dataService.makeRequest(nextURL).then(getRuns.bind(this));
@@ -177,22 +196,22 @@ export class UserPageComponent implements OnInit {
             //console.log("all runs:", this.allRuns);
             console.log("all runs data:", this.allRunsData);
             this.firstRun = this.allRunsData[this.allRunsData.length - 1];
+            console.log("first run:", this.firstRun)
             this.latestRun = this.allRunsData[0];
             this.chartData = this.allRuns.sort((a, b) => (a.value < b.value) ? 1 : -1);
-            
           }
         } else { // End
           //console.log("all runs:", this.allRuns);
           console.log("all runs data:", this.allRunsData);
           this.chartData = this.allRuns.sort((a, b) => (a.value < b.value) ? 1 : -1);
-          
         }
       }		
     }
-    dataService.getRecentRunsByUser(userID).then(await getRuns.bind(this));
+    await dataService.getRecentRunsByUser(userID).then(getRuns.bind(this));
   }
 
-  nameToIndex(array, name:string): number{
+  // Takes an array of objects and a name as arguments, returns the index of first object which contains the name
+  nameToIndex(array: [{name: string,}], name:string): number{
     var index = -1;
     for(var i = 0; i < array.length; i++){
       if(array[i]['name'] == name){

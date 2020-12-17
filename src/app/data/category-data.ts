@@ -17,35 +17,38 @@ export class CategoryData {
     worldRecordHolderLink;
     
     constructor(id:string = "", name:string = "", numRuns:number=0, bestTime: number = 999999, worstTime: number = 999999, 
-                averageTime: number = 999999, runs = 0, worldRecordHolder = {}) {
-        this.id = id;
-        this.name = name;
-        this.numRuns = numRuns;
-        this.bestTime = bestTime;
-        this.worstTime = worstTime;
-        this.averageTime = averageTime;
+                averageTime: number = 999999, runs = [], worldRecordHolder = {}) {
+        if (id.length > 0){
+            this.id = id;
+            this.name = name;
+            this.numRuns = numRuns;
+            this.bestTime = bestTime;
+            this.worstTime = worstTime;
+            this.averageTime = averageTime;
 
-        this.bestTimeString = this.convertTime(new Date(bestTime * 1000 * 60).toISOString().substr(11, 8));
-        this.worstTimeString =  new Date(worstTime * 1000 * 60).toISOString().substr(11, 8);
-        this.averageTimeString = this.convertTime(new Date(averageTime * 1000 * 60).toISOString().substr(11, 8));
-        this.runs = runs;
-        this.worldRecordHolder = worldRecordHolder;
-        if (worldRecordHolder['name']){
-            if(worldRecordHolder['name'].length > 15){
-                this.worldRecordHolderNameShort = worldRecordHolder['name'].slice(0, 15) + "...";
+            this.bestTimeString = this.convertTime(new Date(bestTime * 1000 * 60).toISOString().substr(11, 8));
+            this.worstTimeString =  new Date(worstTime * 1000 * 60).toISOString().substr(11, 8);
+            this.averageTimeString = this.convertTime(new Date(averageTime * 1000 * 60).toISOString().substr(11, 8));
+            this.runs = runs;
+            this.worldRecordHolder = worldRecordHolder;
+            if (worldRecordHolder['name']){
+                if(worldRecordHolder['name'].length > 15){
+                    this.worldRecordHolderNameShort = worldRecordHolder['name'].slice(0, 15) + "...";
+                } else {
+                    this.worldRecordHolderNameShort = worldRecordHolder['name']
+                }
+            }
+            
+            if(name.length > 15){
+                this.nameShort = this.categoryName.slice(0, 15) + "...";
+            }
+            if (worldRecordHolder['id'] && worldRecordHolder['id'] != "N/A"){
+                this.worldRecordHolderLink = "/user/" + worldRecordHolder['id'];
             } else {
-                this.worldRecordHolderNameShort = worldRecordHolder['name']
+                this.worldRecordHolderLink = "/";
             }
         }
         
-        if(name.length > 15){
-            this.nameShort = this.categoryName.slice(0, 15) + "...";
-        }
-        if (worldRecordHolder['id'] && worldRecordHolder['id'] != "N/A"){
-            this.worldRecordHolderLink = "/user/" + worldRecordHolder['id'];
-        } else {
-            this.worldRecordHolderLink = "/";
-        }
     }
     
     public numRunsInPast(pastDate: Date): number{
