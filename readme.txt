@@ -9,7 +9,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
 ## How To Run
-Run `npm install` from the command line in the project directory to install the necessary components then run the command `ng build` from the command line to build the project. Then...
+Run `npm install` from the command line in the project directory to install the necessary components then run the command `ng serve --open` to run the project. 
 
 Pages often take between 5-10 seconds to load the page or load graphs/information. Similarly, the results for searching for a user can take 4-5+ seconds. This is primarily due to the Speedrun.com API which slows down it's response speeds when the amount of requests increases to higher than normal levels (even on the Speedrun.com website searching can take 5+ seconds for results to show). I have not run into any issues with pages not loading at all but if 15+ seconds have passed with no information loading then refreshing the page should cause it to load properly.
 

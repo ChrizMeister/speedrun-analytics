@@ -4,12 +4,10 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.2.
 
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
 ## How To Run
-Run `npm install` from the command line in the project directory to install the necessary components then run the command `ng build` from the command line to build the project. Then...
+The project is hosted on https://speedrun-analytics.web.app. Occasionally some game and user pages give a 404 error when clicking on them for the first time. Refreshing the page fixed this issue for me.
+
+Alternatively, run `npm install` from the command line in the project directory to install the necessary components then run the command `ng serve --open` from the command line to open the project.
 
 Pages often take between 5-10 seconds to load the page or load graphs/information. Similarly, the results for searching for a user can take 4-5+ seconds. This is primarily due to the Speedrun.com API which slows down it's response speeds when the amount of requests increases to higher than normal levels (even on the Speedrun.com website searching can take 5+ seconds for results to show). I have not run into any issues with pages not loading at all but if 15+ seconds have passed with no information loading then refreshing the page should cause it to load properly.
 
