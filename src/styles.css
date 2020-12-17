@@ -101,7 +101,7 @@ h1.title{
 
 .loader {
   position: relative;
-  top: 5%;
+  top: 8%;
   left: 15%;
   border: 16px solid #f3f3f3;
   border-top: 16px solid #585858;
@@ -113,7 +113,7 @@ h1.title{
 
 .loaderCenter {
   position: absolute;
-  top: 5%;
+  top: 8%;
   left: 46%;
   border: 16px solid #f3f3f3;
   border-top: 16px solid #585858;

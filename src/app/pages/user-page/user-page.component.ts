@@ -63,14 +63,17 @@ export class UserPageComponent implements OnInit {
     const dataService = this.dataService;
     var userObject = await dataService.getUserInfo(this.userID);
     var data = userObject['data'];
-    console.log("user data:", data);
+    //console.log("user data:", data);
     var userData = new UserData(data['id'], data['names']['international']);
     userData.link = data['weblink'];
-    if (data['location']['region']){
-      userData.userLocation = data['location']['region']['names']['international'];
-    } else {
-      userData.userLocation = data['location']['country']['names']['international'];
+    if (data['location']){
+      if (data['location']['region']){
+        userData.userLocation = data['location']['region']['names']['international'];
+      } else {
+        userData.userLocation = data['location']['country']['names']['international'];
+      }
     }
+    
     if(data['twitch'] != null){
       userData.twitch = data['twitch']['uri']
     }
@@ -106,7 +109,7 @@ export class UserPageComponent implements OnInit {
   // Get info about user's personal best runs
   async getPersonalBestsInfo(dataService, userData, personalBestsLink){
     dataService.makeRequest(personalBestsLink + "?embed=game,category,run").then((object) =>{
-      console.log("pbs:", object)
+      //console.log("pbs:", object)
       object['data'].sort((a, b) => (a.place > b.place) ? 1 : -1);
       userData.personalBests = object['data'];
       //userData.topFiveRuns = object['data'].slice(0,5);
@@ -133,8 +136,6 @@ export class UserPageComponent implements OnInit {
           } else {
             var found = false;
             for(var i = 0; i < this.worldRecords.length; i++){
-              //console.log(worldRecords[i])
-              //console.log(wrObject)
               if(this.worldRecords[i]['category'] == wrObject['category'] && this.worldRecords[i]['gameId'] == wrObject['gameId']){
                 found = true;
                 break;
@@ -146,10 +147,7 @@ export class UserPageComponent implements OnInit {
             }
           }
         }
-      });
-      //console.log("worldRecords:",  this.worldRecords);
-      //console.log("personal bests:", object['data']);
-      //console.log("top 5 runs:", userData.topFiveRuns);   
+      });  
     }); 
   }
 
@@ -173,7 +171,6 @@ export class UserPageComponent implements OnInit {
           total += run['value'];
         })
         if(total < 20){
-          //console.log("here", this.recentRuns.length)
           if(this.nameToIndex(this.recentRuns, name) == -1){
             this.recentRuns.push({name: name, value: 1, gameId: run['game']['data']['id']});
           } else {
@@ -181,7 +178,6 @@ export class UserPageComponent implements OnInit {
           }
         } else {
           this.chartData1 = this.recentRuns.sort((a, b) => (a.value < b.value) ? 1 : -1);
-          console.log(this.recentRuns)
         }
       });
       if (object['pagination']['links'].length > 1){ // Middle
@@ -194,15 +190,15 @@ export class UserPageComponent implements OnInit {
             dataService.makeRequest(nextURL).then(getRuns.bind(this));
           } else { // End
             //console.log("all runs:", this.allRuns);
-            console.log("all runs data:", this.allRunsData);
+            //console.log("all runs data:", this.allRunsData);
             this.firstRun = this.allRunsData[this.allRunsData.length - 1];
-            console.log("first run:", this.firstRun)
+            //console.log("first run:", this.firstRun)
             this.latestRun = this.allRunsData[0];
             this.chartData = this.allRuns.sort((a, b) => (a.value < b.value) ? 1 : -1);
           }
         } else { // End
           //console.log("all runs:", this.allRuns);
-          console.log("all runs data:", this.allRunsData);
+          //console.log("all runs data:", this.allRunsData);
           this.chartData = this.allRuns.sort((a, b) => (a.value < b.value) ? 1 : -1);
         }
       }		

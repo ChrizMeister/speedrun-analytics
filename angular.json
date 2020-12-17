@@ -118,6 +118,10 @@
               "devServerTarget": "angular-speedrun-project:serve:production"
             }
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {}
         }
       }
     }

@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "speedrun-analytics": {
+      "hosting": {
+        "angular-speedrun-project": [
+          "speedrun-analytics"
+        ]
+      }
+    }
+  }
+}
