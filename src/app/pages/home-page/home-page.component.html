@@ -41,7 +41,7 @@
     </ng-template>
     <div class="card card-med" #containerRef>
       <h1 style="text-align: center">       
-        Number of Runs In Popular Games Since Creation of Speedrun.com
+        Number of Speedruns In Popular Games Since Creation of Speedrun.com
     </h1>
     <div *ngIf="chartData2 && chartData2.length > 0">
       <!--Used/adapted from https://swimlane.gitbook.io/ngx-charts/examples-->
@@ -66,7 +66,7 @@
     </div>
     <div class="card card-med">
       <h1 class="stats">Recent Activity</h1>
-      <h2>Of the last 500 submitted runs to Speedrun.com...</h2>
+      <h2>Of the last 500 submitted speedruns to Speedrun.com...</h2>
       <h2><span class="highlight">{{recentRuns.length}}</span> of them were in different games</h2>
       <h2><span class="highlight">{{uniquePlayers.length}}</span> unique runners submitted runs</h2>
       <h2 *ngIf="recentRuns[0]">The games with the most submitted runs were...</h2> 
